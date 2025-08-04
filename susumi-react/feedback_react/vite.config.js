@@ -24,6 +24,7 @@ function copyManifestPlugin() {
 export default defineConfig({
   plugins: [react(), copyManifestPlugin()],
   server: {
+    port: 3000,
     proxy: {
       '/api': {
         target: 'http://localhost:9093',

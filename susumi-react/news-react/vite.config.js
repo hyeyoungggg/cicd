@@ -11,7 +11,7 @@ export default defineConfig({
     },
   },
   server: {
-    port: 5173, // React 개발서버 기본 포트
+    port: 3000, // React 개발서버 기본 포트
     proxy: {
       '/api': {
         target: 'http://localhost:9093', // ✅ Spring Boot 서버 주소

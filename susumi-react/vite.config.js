@@ -1,32 +1,55 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import path from 'path';
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import path from 'path'
+import fs from 'fs'
+
+// ✅ manifest.json 복사 플러그인
+function copyManifestPlugin() {
+  return {
+    name: 'copy-manifest',
+    closeBundle() {
+      const basePath = 'C:/kd/ws_java/team1_v2sbm3c_devops/src/main/resources/static/notice'
+      const src = path.resolve(basePath, '.vite/manifest.json')
+      const dest = path.resolve(basePath, 'assets/manifest.json')
+
+      try {
+        fs.copyFileSync(src, dest)
+        console.log('✔ manifest.json copied to assets/')
+      } catch (err) {
+        console.error('❌ Failed to copy manifest.json:', err)
+      }
+    }
+  }
+}
 
 export default defineConfig({
-  base: '/', // Spring 정적 리소스 경로와 일치
-  plugins: [react()],
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, 'src'),
-    },
-  },
+  plugins: [react(), copyManifestPlugin()],
   server: {
+    port: 3000,
     proxy: {
       '/api': {
         target: 'http://localhost:9093',
-        changeOrigin: true,
-        // ⛔️ 삭제 또는 주석 처리
-        // rewrite: (p) => p.replace(/^\/api/, '')
-      },
-    },
+        changeOrigin: true
+      }
+    }
   },
   build: {
-    outDir: '../src/main/resources/static/notice',
+    outDir: path.resolve('C:/kd/ws_java/team1_v2sbm3c_devops/src/main/resources/static/notice'),
     emptyOutDir: true,
     manifest: true,
-    manifestFileName: 'assets/manifest.json', // ✅ 필수
+    manifestFileName: 'assets/manifest.json',
     rollupOptions: {
-      input: path.resolve(__dirname, 'index.html'),
-    },
-  },
-});
+      input: './index.html',
+      output: {
+        entryFileNames: 'assets/index.js',
+        chunkFileNames: 'assets/[name].js',
+        assetFileNames: ({ name }) => {
+          if (name && name.endsWith('.css')) {
+            return 'assets/index.css'
+          }
+          return 'assets/[name].[ext]'
+        }
+      }
+    }
+  }
+})
