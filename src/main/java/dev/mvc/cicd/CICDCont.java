@@ -32,6 +32,9 @@ public class CICDCont {
     } else if (sw == 3) {
       msg = "/cicd workflow 테스트2";
       log.info(msg);
+    } else if (sw == 4) {
+      msg = "/cicd workflow 테스트3";
+      log.info(msg);
     }
     
     return "<h3>" + msg + "</h3>";
